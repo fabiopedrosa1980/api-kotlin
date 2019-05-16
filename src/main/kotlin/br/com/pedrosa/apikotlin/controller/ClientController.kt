@@ -2,11 +2,11 @@ package br.com.pedrosa.apikotlin.controller
 
 import br.com.pedrosa.apikotlin.repository.ClientRepository
 import br.com.pedrosa.apikotlin.domain.Client
+import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
 
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
-
 
 @RestController
 @RequestMapping("client")
@@ -24,6 +24,7 @@ class ClientController(private val clientRepository: ClientRepository) {
     }
 
     @PostMapping
+    @ResponseStatus(value = HttpStatus.CREATED)
     fun add(@RequestBody client: Client): Mono<Client> {
         return this.clientRepository.save(client)
     }
@@ -33,9 +34,12 @@ class ClientController(private val clientRepository: ClientRepository) {
         return this.clientRepository.save(client)
     }
 
-    @DeleteMapping("{id}")
-    fun delete(@PathVariable id: String) {
-        this.clientRepository.deleteById(id)
+    @DeleteMapping(value = ["/{id}"])
+    @ResponseStatus(value = HttpStatus.NO_CONTENT)
+    fun delete(@PathVariable id: String): Mono<Void> {
+        return this.clientRepository.findById(id)
+                .flatMap { client -> this.clientRepository.delete(client) }
+                .then(Mono.empty())
     }
 
 }
