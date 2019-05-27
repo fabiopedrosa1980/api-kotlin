@@ -5,5 +5,5 @@ import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.Document
 
 @Document
-class Client(@Id val id: String?, val name: String, val age: Int){
+data class Client(@Id var id: String?, var name: String, var age: Int){
 }

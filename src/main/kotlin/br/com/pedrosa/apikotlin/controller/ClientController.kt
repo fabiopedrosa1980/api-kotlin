@@ -29,9 +29,12 @@ class ClientController(private val clientRepository: ClientRepository) {
         return this.clientRepository.save(client)
     }
 
-    @PutMapping
-    fun update(@RequestBody client: Client): Mono<Client> {
-        return this.clientRepository.save(client)
+    @PutMapping(value = ["/{id}"])
+    fun update(@PathVariable id: String,@RequestBody client: Client): Mono<Client> {
+        return this.clientRepository.findById(id)
+                .map { it.copy(name = client.name, age = client.age) }
+                .flatMap { this.clientRepository.save(it) }
+
     }
 
     @DeleteMapping(value = ["/{id}"])
